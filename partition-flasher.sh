@@ -1,14 +1,12 @@
 #!/system/bin/sh                            
-# Mendapatkan path direktori skrip yang sedang dijalankan
+
+
 SCRIPT_DIR=$(dirname "$0")
 
-# Menentukan path file yang akan diberikan izin eksekusi
 FILE_TO_CHMOD="$SCRIPT_DIR/partition-flasher.sh"
 
-# Memberikan izin eksekusi pada file yang dimaksud
 chmod +x "$FILE_TO_CHMOD"
 
-# Verifikasi apakah perintah berhasil
 if [ $? -eq 0 ]; then
     echo "Perintah chmod +x berhasil dijalankan untuk $FILE_TO_CHMOD."
 else
@@ -19,15 +17,13 @@ echo "====================================="
 echo " Universal Partition Flasher"
 echo "====================================="
 
-# Informasi Pengembang (mirip package.json)
 echo "Pengembang: yudibilly"
 echo "Versi: 1.0.0"
 echo "Deskripsi: Skrip ini digunakan untuk mem-flash partisi dan membuat partisi baru dari file backup."
-echo "Website: https://github.com/yudibilly/partition-flasher"
+echo "Website: www.yudibilly.blogspot.com"
 echo "Repositori: https://github.com/Gopartner/universal-partition-flasher.git"
 echo "-------------------------------------"
 
-# Peringatan awal
 echo "PENTING!"
 echo "1. Skrip ini akan memeriksa akses root untuk operasi flashing partisi."
 echo "2. Akses root hanya dibutuhkan untuk mem-flash partisi yang memerlukannya."
@@ -35,7 +31,6 @@ echo "3. Pastikan Anda memahami risiko flashing partisi."
 echo "4. Tekan Ctrl+C kapan saja untuk membatalkan."
 echo "-------------------------------------"
 
-# Memeriksa apakah perangkat memiliki akses root
 if [ "$(id -u)" -ne 0 ]; then
     echo "Peringatan: Skrip ini membutuhkan akses root untuk mem-flash partisi."
     echo "Namun, beberapa operasi dapat dilakukan tanpa akses root. Pastikan Anda tahu apa yang akan diflash."
@@ -43,7 +38,6 @@ else
     echo "Akses root terdeteksi. Proses flashing partisi yang membutuhkan akses root akan dilanjutkan."
 fi
 
-# Mencari file img di seluruh penyimpanan
 echo "Mencari file .img di seluruh penyimpanan, mohon tunggu..."
 SEARCH_RESULTS=$(find /sdcard /mnt -type f -name "*.img" 2>/dev/null)
 
@@ -63,7 +57,6 @@ for FILE in $SEARCH_RESULTS; do
 done
 echo "-------------------------------------"
 
-# Meminta pengguna untuk memilih file
 read -p "Pilih nomor file .img untuk diflash (1-$((INDEX - 1))): " CHOICE
 if [ -z "${FILE_PATHS[$CHOICE]}" ]; then
     echo "Error: Pilihan tidak valid."
@@ -90,7 +83,7 @@ for PART in $AVAILABLE_PARTITIONS; do
 done
 echo "-------------------------------------"
 
-# Meminta pengguna untuk memilih partisi
+
 read -p "Pilih nomor partisi untuk diflash (1-$((INDEX - 1))): " PART_CHOICE
 if [ -z "${PARTITIONS[$PART_CHOICE]}" ]; then
     echo "Error: Pilihan tidak valid."
@@ -108,7 +101,6 @@ if [ "$CONFIRM" != "y" ]; then
     exit 1
 fi
 
-# Menambahkan opsi untuk membuat partisi dari file backup
 echo "-------------------------------------"
 read -p "Apakah Anda ingin membuat partisi baru dari file backup (misal: boot.img.win)? (y/n): " CREATE_PARTITION
 if [ "$CREATE_PARTITION" == "y" ]; then
@@ -130,7 +122,6 @@ if [ "$CREATE_PARTITION" == "y" ]; then
     done
     echo "-------------------------------------"
 
-    # Meminta pengguna memilih file backup
     read -p "Pilih nomor file backup untuk digunakan (1-$((INDEX - 1))): " BACKUP_CHOICE
     if [ -z "${BACKUP_FILE_PATHS[$BACKUP_CHOICE]}" ]; then
         echo "Error: Pilihan tidak valid."
@@ -139,16 +130,14 @@ if [ "$CREATE_PARTITION" == "y" ]; then
     SELECTED_BACKUP_FILE=${BACKUP_FILE_PATHS[$BACKUP_CHOICE]}
     echo "Anda memilih: $SELECTED_BACKUP_FILE"
 
-    # Menanyakan apakah pengguna ingin membuat partisi baru
     echo "Membuat partisi baru dengan file backup..."
-    # Logika untuk pembuatan partisi, misalnya dd atau menggunakan alat lain
     echo -n "Proses pembuatan partisi dengan file backup $SELECTED_BACKUP_FILE dimulai"
     for i in {1..10}; do
         sleep 1
         echo -n "."
     done
     echo " Selesai!"
-    # Contoh perintah untuk membuat partisi (harus disesuaikan dengan perangkat dan format file):
+    
     dd if="$SELECTED_BACKUP_FILE" of="$PART_PATH"
 
     if [ $? -eq 0 ]; then
@@ -159,7 +148,7 @@ if [ "$CREATE_PARTITION" == "y" ]; then
     fi
 fi
 
-# Flash file img ke partisi jika akses root tersedia
+
 if [ "$(id -u)" -eq 0 ]; then
     echo -n "Memulai proses flashing..."
     for i in {1..10}; do
@@ -179,5 +168,5 @@ else
 fi
 
 echo "-------------------------------------"
-echo "Proses selesai!"
+echo "      Proses selesai!"
 echo "====================================="
